@@ -1,8 +1,11 @@
 # Python
-backend/__pycache__/
+__pycache__/
 *.pyc
 *.pyo
 *.pyd
+
+#Database
+*.db
 
 # Virtual environment
 venv/
