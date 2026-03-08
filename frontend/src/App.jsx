@@ -14,7 +14,6 @@ function App() {
   });
   const [isEditing, setIsEditing] = useState(false);
 
-  // Khởi tạo dữ liệu lớp học mẫu nếu chưa có
   const initClasses = async () => {
     const res = await fetch(`${API_URL}/classes`);
     const data = await res.json();
@@ -80,7 +79,7 @@ function App() {
   };
 
   const handleDelete = async (id) => {
-    if(window.confirm('Are you sure?')) {
+    if(window.confirm('WARNING: Trục xuất sinh viên này khỏi hệ thống?')) {
       await fetch(`${API_URL}/students/${id}`, { method: 'DELETE' });
       fetchStudents();
       fetchStats();
@@ -88,130 +87,155 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8 font-sans">
-      <div className="max-w-5xl mx-auto bg-white p-6 rounded-lg shadow-md">
+    <div className="min-h-screen bg-slate-950 text-slate-200 p-8 font-sans bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black">
+      <div className="max-w-6xl mx-auto">
         
-        <div className="flex justify-between items-center mb-6 border-b pb-4">
-          <h1 className="text-3xl font-bold text-gray-800">Advanced Student Manager</h1>
-          <div className="space-x-3">
-            <a href={`${API_URL}/export`} className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 no-underline inline-block">
-              Export CSV
+        {/* Header Section */}
+        <div className="flex justify-between items-center mb-10 pb-6 border-b border-slate-800/60">
+          <div>
+            <h1 className="text-4xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-fuchsia-500 drop-shadow-lg">
+              Nexus Student Hub
+            </h1>
+            <p className="text-slate-400 mt-2 text-sm tracking-wider uppercase">Advanced Management System</p>
+          </div>
+          <div className="space-x-4">
+            <a href={`${API_URL}/export`} className="inline-block bg-slate-800 border border-slate-700 hover:border-fuchsia-500 hover:text-fuchsia-400 text-slate-300 px-5 py-2.5 rounded-xl transition-all duration-300 shadow-[0_0_15px_rgba(217,70,239,0.1)] hover:shadow-[0_0_20px_rgba(217,70,239,0.3)]">
+              ⬇ Export CSV
             </a>
-            <button onClick={() => setView(view === 'list' ? 'form' : 'list')} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-              {view === 'list' ? '+ Add Student' : 'Back to List'}
+            <button onClick={() => setView(view === 'list' ? 'form' : 'list')} className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white px-6 py-2.5 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-[0_0_20px_rgba(6,182,212,0.4)]">
+              {view === 'list' ? '✦ Add Entity' : '← Return Home'}
             </button>
           </div>
         </div>
 
         {view === 'list' && (
-          <>
-            {/* Dashboard Thống kê */}
-            <div className="grid grid-cols-3 gap-4 mb-6">
-              <div className="bg-blue-100 p-4 rounded-lg shadow">
-                <h3 className="text-gray-600 font-semibold">Total Students</h3>
-                <p className="text-2xl font-bold">{stats.total_students}</p>
+          <div className="animate-fade-in">
+            {/* Stats Dashboard - Glassmorphism */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+              <div className="bg-slate-900/50 backdrop-blur-xl border border-slate-800/80 p-6 rounded-2xl shadow-xl relative overflow-hidden group">
+                <div className="absolute top-0 left-0 w-1 h-full bg-cyan-500 group-hover:w-full group-hover:opacity-10 transition-all duration-500"></div>
+                <h3 className="text-slate-400 font-medium tracking-wide text-sm uppercase mb-2">Total Population</h3>
+                <p className="text-4xl font-black text-cyan-400">{stats.total_students}</p>
               </div>
-              <div className="bg-green-100 p-4 rounded-lg shadow">
-                <h3 className="text-gray-600 font-semibold">Average GPA</h3>
-                <p className="text-2xl font-bold">{stats.average_gpa}</p>
+              
+              <div className="bg-slate-900/50 backdrop-blur-xl border border-slate-800/80 p-6 rounded-2xl shadow-xl relative overflow-hidden group">
+                <div className="absolute top-0 left-0 w-1 h-full bg-fuchsia-500 group-hover:w-full group-hover:opacity-10 transition-all duration-500"></div>
+                <h3 className="text-slate-400 font-medium tracking-wide text-sm uppercase mb-2">Global GPA Avg</h3>
+                <p className="text-4xl font-black text-fuchsia-400">{stats.average_gpa}</p>
               </div>
-              <div className="bg-purple-100 p-4 rounded-lg shadow overflow-auto h-24">
-                <h3 className="text-gray-600 font-semibold">By Major</h3>
-                <ul className="text-sm">
+              
+              <div className="bg-slate-900/50 backdrop-blur-xl border border-slate-800/80 p-6 rounded-2xl shadow-xl relative overflow-hidden h-32 overflow-y-auto custom-scrollbar group">
+                <div className="absolute top-0 left-0 w-1 h-full bg-blue-500 group-hover:w-full group-hover:opacity-10 transition-all duration-500"></div>
+                <h3 className="text-slate-400 font-medium tracking-wide text-sm uppercase mb-2">Demographics</h3>
+                <ul className="text-sm space-y-1 text-slate-300">
                   {Object.entries(stats.by_major).map(([major, count]) => (
-                    <li key={major}>• {major}: {count}</li>
+                    <li key={major} className="flex justify-between border-b border-slate-800/50 pb-1">
+                      <span>{major}</span> <span className="text-blue-400 font-bold">{count}</span>
+                    </li>
                   ))}
                 </ul>
               </div>
             </div>
 
-            {/* Thanh Tìm kiếm */}
-            <form onSubmit={handleSearch} className="mb-4 flex gap-2">
+            {/* Search Bar */}
+            <form onSubmit={handleSearch} className="mb-6 flex gap-3">
               <input 
                 type="text" 
-                placeholder="Search student by name..." 
+                placeholder="Query database by name..." 
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="p-2 border rounded w-full max-w-md"
+                className="w-full max-w-lg bg-slate-900/80 border border-slate-700 text-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 focus:outline-none transition-all placeholder-slate-500"
               />
-              <button type="submit" className="bg-gray-800 text-white px-4 py-2 rounded">Search</button>
-              <button type="button" onClick={() => {setSearchQuery(''); fetchStudents('');}} className="bg-gray-300 px-4 py-2 rounded">Clear</button>
+              <button type="submit" className="bg-slate-800 hover:bg-slate-700 text-white px-6 py-3 rounded-xl border border-slate-700 transition-colors">🔍</button>
+              <button type="button" onClick={() => {setSearchQuery(''); fetchStudents('');}} className="bg-slate-900 hover:bg-red-900/40 text-slate-400 hover:text-red-400 px-6 py-3 rounded-xl border border-slate-800 transition-colors">Clear</button>
             </form>
 
-            {/* Bảng dữ liệu */}
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-gray-800 text-white">
-                  <th className="p-3 border">ID</th>
-                  <th className="p-3 border">Name</th>
-                  <th className="p-3 border">Class ID</th>
-                  <th className="p-3 border">Major</th>
-                  <th className="p-3 border">GPA</th>
-                  <th className="p-3 border text-center">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {students.map((s) => (
-                  <tr key={s.student_id} className="hover:bg-gray-100">
-                    <td className="p-3 border">{s.student_id}</td>
-                    <td className="p-3 border">{s.name}</td>
-                    <td className="p-3 border font-semibold text-blue-600">{s.class_id}</td>
-                    <td className="p-3 border">{s.major}</td>
-                    <td className="p-3 border">{s.gpa}</td>
-                    <td className="p-3 border text-center space-x-2">
-                      <button onClick={() => { setFormData(s); setIsEditing(true); setView('form'); }} className="bg-yellow-500 text-white px-3 py-1 rounded">Edit</button>
-                      <button onClick={() => handleDelete(s.student_id)} className="bg-red-500 text-white px-3 py-1 rounded">Delete</button>
-                    </td>
+            {/* Data Table */}
+            <div className="bg-slate-900/60 backdrop-blur-lg border border-slate-800/80 rounded-2xl shadow-2xl overflow-hidden">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-slate-950/80 text-slate-400 text-sm uppercase tracking-wider">
+                    <th className="p-4 border-b border-slate-800 font-medium">ID</th>
+                    <th className="p-4 border-b border-slate-800 font-medium">Name</th>
+                    <th className="p-4 border-b border-slate-800 font-medium">Class</th>
+                    <th className="p-4 border-b border-slate-800 font-medium">Major</th>
+                    <th className="p-4 border-b border-slate-800 font-medium">GPA</th>
+                    <th className="p-4 border-b border-slate-800 font-medium text-center">Protocol</th>
                   </tr>
-                ))}
-                {students.length === 0 && <tr><td colSpan="6" className="p-4 text-center text-gray-500">No students found.</td></tr>}
-              </tbody>
-            </table>
-          </>
+                </thead>
+                <tbody className="divide-y divide-slate-800/60">
+                  {students.map((s) => (
+                    <tr key={s.student_id} className="hover:bg-slate-800/40 transition-colors duration-200 group">
+                      <td className="p-4 font-mono text-slate-300">{s.student_id}</td>
+                      <td className="p-4 font-medium text-slate-100">{s.name}</td>
+                      <td className="p-4 text-cyan-400 font-semibold">{s.class_id}</td>
+                      <td className="p-4 text-slate-300">{s.major}</td>
+                      <td className="p-4 text-fuchsia-400 font-mono">{s.gpa}</td>
+                      <td className="p-4 text-center space-x-3">
+                        <button onClick={() => { setFormData(s); setIsEditing(true); setView('form'); }} className="text-yellow-500 hover:text-yellow-400 hover:scale-110 transition-transform px-2 py-1">
+                          Edit
+                        </button>
+                        <button onClick={() => handleDelete(s.student_id)} className="text-red-500 hover:text-red-400 hover:scale-110 transition-transform px-2 py-1">
+                          Del
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                  {students.length === 0 && (
+                    <tr><td colSpan="6" className="p-8 text-center text-slate-500 italic">No entities found in the current sector.</td></tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
         )}
 
-        {/* Form Thêm/Sửa */}
+        {/* Form Add/Edit */}
         {view === 'form' && (
-          <form onSubmit={handleSubmit} className="space-y-4 bg-gray-50 p-6 rounded border">
-            {/* Các field cũ giữ nguyên */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-gray-700">Student ID</label>
-                <input type="text" required disabled={isEditing} value={formData.student_id} onChange={(e) => setFormData({...formData, student_id: e.target.value})} className="w-full p-2 border rounded" />
+          <div className="max-w-3xl mx-auto bg-slate-900/60 backdrop-blur-xl border border-slate-800 p-8 rounded-2xl shadow-2xl animate-fade-in">
+            <h2 className="text-2xl font-bold mb-6 text-cyan-400 border-b border-slate-800 pb-4">
+              {isEditing ? 'System Override: Edit Profile' : 'Initialize New Entity'}
+            </h2>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-slate-400 text-sm font-medium mb-2">Entity ID (Student ID)</label>
+                  <input type="text" required disabled={isEditing} value={formData.student_id} onChange={(e) => setFormData({...formData, student_id: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:outline-none text-slate-200 disabled:opacity-50" />
+                </div>
+                <div>
+                  <label className="block text-slate-400 text-sm font-medium mb-2">Full Name</label>
+                  <input type="text" required value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:outline-none text-slate-200" />
+                </div>
+                <div>
+                  <label className="block text-slate-400 text-sm font-medium mb-2">Birth Year</label>
+                  <input type="number" required value={formData.birth_year} onChange={(e) => setFormData({...formData, birth_year: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:outline-none text-slate-200" />
+                </div>
+                <div>
+                  <label className="block text-slate-400 text-sm font-medium mb-2">Specialization (Major)</label>
+                  <input type="text" required value={formData.major} onChange={(e) => setFormData({...formData, major: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:outline-none text-slate-200" />
+                </div>
+                <div>
+                  <label className="block text-slate-400 text-sm font-medium mb-2">Performance Index (GPA)</label>
+                  <input type="number" step="0.1" required value={formData.gpa} onChange={(e) => setFormData({...formData, gpa: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:outline-none text-slate-200" />
+                </div>
+                <div>
+                  <label className="block text-cyan-400 text-sm font-bold mb-2">Class Assignment</label>
+                  <select required value={formData.class_id} onChange={(e) => setFormData({...formData, class_id: e.target.value})} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:outline-none text-slate-200 appearance-none">
+                    <option value="" disabled>Select a class...</option>
+                    {classes.map(c => (
+                      <option key={c.class_id} value={c.class_id}>{c.class_id} - {c.class_name}</option>
+                    ))}
+                  </select>
+                </div>
               </div>
-              <div>
-                <label className="block text-gray-700">Name</label>
-                <input type="text" required value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="w-full p-2 border rounded" />
-              </div>
-              <div>
-                <label className="block text-gray-700">Birth Year</label>
-                <input type="number" required value={formData.birth_year} onChange={(e) => setFormData({...formData, birth_year: e.target.value})} className="w-full p-2 border rounded" />
-              </div>
-              <div>
-                <label className="block text-gray-700">Major</label>
-                <input type="text" required value={formData.major} onChange={(e) => setFormData({...formData, major: e.target.value})} className="w-full p-2 border rounded" />
-              </div>
-              <div>
-                <label className="block text-gray-700">GPA</label>
-                <input type="number" step="0.1" required value={formData.gpa} onChange={(e) => setFormData({...formData, gpa: e.target.value})} className="w-full p-2 border rounded" />
-              </div>
-              
-              {/* Field mới: Chọn Lớp học */}
-              <div>
-                <label className="block text-gray-700 font-bold">Class Assignment</label>
-                <select required value={formData.class_id} onChange={(e) => setFormData({...formData, class_id: e.target.value})} className="w-full p-2 border rounded bg-white">
-                  <option value="" disabled>Select a class</option>
-                  {classes.map(c => (
-                    <option key={c.class_id} value={c.class_id}>{c.class_id} - {c.class_name}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
 
-            <button type="submit" className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 mt-4">
-              {isEditing ? 'Save Changes' : 'Create Student'}
-            </button>
-          </form>
+              <div className="flex justify-end pt-4 border-t border-slate-800">
+                <button type="submit" className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-white px-8 py-3 rounded-xl font-bold transition-all transform hover:-translate-y-1 shadow-[0_0_15px_rgba(16,185,129,0.3)]">
+                  {isEditing ? 'Commit Changes' : 'Initialize'}
+                </button>
+              </div>
+            </form>
+          </div>
         )}
 
       </div>
